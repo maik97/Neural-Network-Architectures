@@ -1,1 +1,3 @@
-# Artificial-Neural-Networks
+# Collection of Neural Network Architectures
+
+
