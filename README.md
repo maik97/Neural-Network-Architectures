@@ -14,7 +14,7 @@ See below for a list of the implementations so far.
   [[3]](https://arxiv.org/abs/1606.09375)
 
 ## Other Networks
-- [ ] Hopfield Network
+- [ ] Modern Hopfield Network
   [[4]](https://arxiv.org/abs/2008.02217)
 - [X] Self-Normalizing Neural Network
   [[5]](https://arxiv.org/abs/1706.02515)

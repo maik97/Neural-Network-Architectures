@@ -10,7 +10,7 @@ def test_with_ppo(
         last_layer_dim_pi=64,
         last_layer_dim_vf=64,
         total_timesteps=100_000,
-        test_timesteps=10_000
+        test_timesteps=20
 ):
 
     policy_kwargs = dict(
