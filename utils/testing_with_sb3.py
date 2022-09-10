@@ -9,7 +9,7 @@ def test_with_ppo(
         network_kwargs=None,
         last_layer_dim_pi=64,
         last_layer_dim_vf=64,
-        total_timesteps=10_000_000,
+        total_timesteps=100_000,
         test_timesteps=10_000
 ):
 

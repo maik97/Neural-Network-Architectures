@@ -68,8 +68,8 @@ def main():
     )
     test_with_ppo(
         env=env,
-        network=None,#SelfNormalizingNetwork,
-        network_kwargs=None,#network_kwargs,
+        network=SelfNormalizingNetwork,
+        network_kwargs=network_kwargs,
         last_layer_dim_pi=64,
         last_layer_dim_vf=64,
     )
