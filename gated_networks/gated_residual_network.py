@@ -1,6 +1,10 @@
 import torch.nn as nn
 import numpy as np
 from utils.init_layer import nn_block
+from utils.util_func import maybe_kwargs, maybe_default_kwarg
+
+from gated_networks.gated_linear_unit import GatedLinearUnit
+
 
 class GatedResidualNetwork(nn.Module):
 
@@ -9,51 +13,74 @@ class GatedResidualNetwork(nn.Module):
             in_features,
             out_features,
             hidden_features,
-            dropout=0.0,
-            elu_layer_nn=None,
-            elu_layer_kwargs=None,
-            elu_activation_kwargs=None,
-            dense_layer_nn=None,
-            dense_layer_kwargs=None,
-            dense_activation=None,
-            dense_activation_kwargs=None,
-            dense_dropout_p=0.15,
-            dense
+            use_projector=True,
+            use_layer_norm=True,
+            elu_dense_kwargs=None,
+            linear_dense_kwargs=None,
+            glu_gate_kwargs=None,
+            glu_dense_kwargs=None,
+            projector_kwargs=None,
+            layer_norm_kwargs=None,
     ):
         super(GatedResidualNetwork, self).__init__()
 
         self.in_features = in_features
-        self.out_features = hidden_features
+        self.hidden_features = hidden_features
+        self.out_features = out_features
 
+        elu_dense_kwargs = maybe_default_kwarg(elu_dense_kwargs, 'layer_nn', nn.Linear)
+        elu_dense_kwargs = maybe_default_kwarg(elu_dense_kwargs, 'activation', nn.ELU)
         self.elu_dense = nn_block(
             in_features=in_features,
-            out_features=out_features,
-            layer_nn=elu_layer_nn,
-            layer_kwargs=elu_layer_kwargs,
-            activation=nn.ELU,
-            activation_kwargs=elu_activation_kwargs,
+            out_features=hidden_features,
+            **elu_dense_kwargs
         )
 
+        linear_dense_kwargs = maybe_default_kwarg(linear_dense_kwargs, 'layer_nn', nn.Linear)
+        linear_dense_kwargs = maybe_default_kwarg(linear_dense_kwargs, 'activation', None)
+        linear_dense_kwargs = maybe_default_kwarg(linear_dense_kwargs, 'dropout_p', 0.15)
+        linear_dense_kwargs = maybe_default_kwarg(linear_dense_kwargs, 'dense_dropout_type', nn.Dropout)
         self.linear_dense = nn_block(
+            in_features=hidden_features,
+            out_features=out_features,
+            **linear_dense_kwargs
+        )
+
+        self.gated_linear_unit = GatedLinearUnit(
             in_features=in_features,
             out_features=out_features,
-            layer_nn=dense_layer_nn,
-            layer_kwargs=dense_layer_kwargs,
-            activation=dense_activation,
-            activation_kwargs=dense_activation_kwargs,
+            gate_kwargs=glu_gate_kwargs,
+            dense_kwargs=glu_dense_kwargs,
         )
 
-        self.dropout = layers.Dropout(dropout_rate)
-        self.gated_linear_unit = GatedLinearUnit(units)
-        self.layer_norm = layers.LayerNormalization()
-        self.project = layers.Dense(units)
+        if use_projector:
+            self.projector = nn_block(
+                in_features=in_features,
+                out_features=out_features,
+                **maybe_kwargs(projector_kwargs)
+            )
+        else:
+            if in_features != out_features:
+                raise Exception(f"in_features must be the same as out_features, when not using a projector layer"
+                                f"in_features: {in_features}, out_features: {out_features}")
+            self.projector = None
+
+        if use_layer_norm:
+            self.layer_norm = nn.LayerNorm(out_features, **maybe_kwargs(layer_norm_kwargs))
+        else:
+            self.layer_norm = None
 
     def forward(self, inputs):
+
         x = self.elu_dense(inputs)
         x = self.linear_dense(x)
-        x = self.dropout(x)
-        if inputs.shape[-1] != self.units:
-            inputs = self.project(inputs)
+
+        if self.projector is not None:
+            inputs = self.projector(inputs)
+
         x = inputs + self.gated_linear_unit(x)
-        x = self.layer_norm(x)
+
+        if self.layer_norm is not None:
+            x = self.layer_norm(x)
+
         return x
