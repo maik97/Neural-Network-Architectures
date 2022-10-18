@@ -1,19 +1,36 @@
 import torch.nn as nn
 import numpy as np
-
+from utils.init_layer import nn_block
 
 class SelfNormalizingNetworkBlock(nn.Module):
 
-    def __init__(self, in_features, out_features, dropout=0.0, linear_kwargs=None, trace_activations=False):
+    def __init__(
+            self,
+            in_features,
+            out_features,
+            dropout_p=0.0,
+            dropout_type='auto',
+            dropout_kwargs=None,
+            trace_activations=False,
+            layer_kwargs=None,
+            layer_nn=None,
+            activation='auto',
+            activation_kwargs=None,
+    ):
         super(SelfNormalizingNetworkBlock, self).__init__()
 
         self.in_features = in_features
         self.out_features = out_features
 
-        linear_kwargs = {} if linear_kwargs is None else linear_kwargs
-        self.linear = nn.Linear(in_features, out_features, **linear_kwargs)
-        self.selu = nn.SELU()
-        self.dropout = nn.AlphaDropout(p=dropout)
+        activation = nn.SELU() if activation == 'auto' else activation
+        self.dense = nn_block(in_features, out_features, layer_nn, layer_kwargs, activation, activation_kwargs)
+
+        dropout_type = nn.AlphaDropout if dropout_type == 'auto' else dropout_type
+        dropout_kwargs = {} if dropout_kwargs is None else dropout_kwargs
+        if dropout_p == 0.0 or dropout_type is None:
+            self.dropout = None
+        else:
+            self.dropout = dropout_type(dropout_p, **dropout_kwargs)
 
         self.trace_activations = trace_activations
 
@@ -26,10 +43,12 @@ class SelfNormalizingNetworkBlock(nn.Module):
             nn.init.constant_(self.linear.bias, 0.0)
 
     def forward(self, inputs):
-        activation = self.selu(self.linear(inputs))
+        activation = self.dense(inputs)
         if self.trace_activations:
             self.save_activation_distribution(activation)
-        return self.dropout(activation)
+        if self.dropout is not None:
+            activation = self.dropout(activation)
+        return activation
 
 
     def save_activation_distribution(self, activation):
