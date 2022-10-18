@@ -22,7 +22,7 @@ See below for a list of the implementations so far.
 - [x] Gated Residual Network (GRN)
   [[5]](https://arxiv.org/abs/1912.09363)
   [[Code]](https://github.com/maik97/Neural-Network-Architectures/blob/main/gated_networks/gated_residual_network.py)
-- [ ] Variable Selection Network (VSN)
+- [x] Variable Selection Network (VSN)
   [[5]](https://arxiv.org/abs/1912.09363)
   [[Code]](https://github.com/maik97/Neural-Network-Architectures/blob/main/gated_networks/variable_selection_network.py)
 
