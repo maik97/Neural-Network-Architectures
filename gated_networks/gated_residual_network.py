@@ -1,5 +1,5 @@
 import torch.nn as nn
-from utils.init_layer import nn_block
+from utils.network_block import NetworkBlock
 from utils.util_func import maybe_kwargs, maybe_default_kwarg
 
 from gated_networks.gated_linear_unit import GatedLinearUnit
@@ -29,7 +29,7 @@ class GatedResidualNetwork(nn.Module):
 
         elu_dense_kwargs = maybe_default_kwarg(elu_dense_kwargs, 'layer_nn', nn.Linear)
         elu_dense_kwargs = maybe_default_kwarg(elu_dense_kwargs, 'activation', nn.ELU)
-        self.elu_dense = nn_block(
+        self.elu_dense = NetworkBlock(
             in_features=in_features,
             out_features=hidden_features,
             **elu_dense_kwargs
@@ -39,7 +39,7 @@ class GatedResidualNetwork(nn.Module):
         linear_dense_kwargs = maybe_default_kwarg(linear_dense_kwargs, 'activation', None)
         linear_dense_kwargs = maybe_default_kwarg(linear_dense_kwargs, 'dropout_p', 0.15)
         linear_dense_kwargs = maybe_default_kwarg(linear_dense_kwargs, 'dense_dropout_type', nn.Dropout)
-        self.linear_dense = nn_block(
+        self.linear_dense = NetworkBlock(
             in_features=hidden_features,
             out_features=out_features,
             **linear_dense_kwargs
@@ -53,7 +53,7 @@ class GatedResidualNetwork(nn.Module):
         )
 
         if use_projector:
-            self.projector = nn_block(
+            self.projector = NetworkBlock(
                 in_features=in_features,
                 out_features=out_features,
                 **maybe_kwargs(projector_kwargs)

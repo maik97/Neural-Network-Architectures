@@ -1,6 +1,6 @@
 import torch.nn as nn
-from utils.init_layer import nn_block
 from utils.util_func import maybe_kwargs, maybe_default_kwarg
+from utils.network_block import NetworkBlock
 
 
 class GatedLinearUnit(nn.Module):
@@ -18,8 +18,8 @@ class GatedLinearUnit(nn.Module):
         self.out_features = out_features
 
         gate_kwargs = maybe_default_kwarg(gate_kwargs, 'activation', nn.Sigmoid)
-        self.gate = nn_block(in_features, out_features, **gate_kwargs)
-        self.dense = nn_block(in_features, out_features, **maybe_kwargs(dense_kwargs))
+        self.gate = NetworkBlock(in_features, out_features, **gate_kwargs)
+        self.dense = NetworkBlock(in_features, out_features, **maybe_kwargs(dense_kwargs))
 
     def forward(self, inputs):
         return self.dense(inputs) * self.gate(inputs)
