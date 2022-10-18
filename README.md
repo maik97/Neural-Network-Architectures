@@ -32,3 +32,26 @@ See below for a list of the implementations so far.
 - [X] Self-Normalizing Neural Network
   [[7]](https://arxiv.org/abs/1706.02515)
   [[Code]](https://github.com/maik97/Neural-Network-Architectures/tree/main/self_normalizing_neural_networks)
+
+## References
+
+[[1]](https://arxiv.org/abs/1710.10903)
+Veličković, P., Cucurull, G., Casanova, A., Romero, A., Liò, P., & Bengio, Y. (2017). Graph Attention Networks. doi:10.48550/ARXIV.1710.10903
+
+[[2]](https://arxiv.org/abs/1609.02907)
+Kipf, T. N., & Welling, M. (2016). Semi-Supervised Classification with Graph Convolutional Networks. doi:10.48550/ARXIV.1609.02907
+
+[[3]](https://arxiv.org/abs/1606.09375)
+Defferrard, M., Bresson, X., & Vandergheynst, P. (2016). Convolutional Neural Networks on Graphs with Fast Localized Spectral Filtering. doi:10.48550/ARXIV.1606.09375
+
+[[4]](https://arxiv.org/abs/1612.08083)
+Dauphin, Y. N., Fan, A., Auli, M., & Grangier, D. (2016). Language Modeling with Gated Convolutional Networks. doi:10.48550/ARXIV.1612.08083
+
+[[5]](https://arxiv.org/abs/1912.09363)
+Lim, B., Arik, S. O., Loeff, N., & Pfister, T. (2019). Temporal Fusion Transformers for Interpretable Multi-horizon Time Series Forecasting. doi:10.48550/ARXIV.1912.09363
+
+[[6]](https://arxiv.org/abs/2008.02217)
+Ramsauer, H., Schäfl, B., Lehner, J., Seidl, P., Widrich, M., Adler, T., … Hochreiter, S. (2020). Hopfield Networks is All You Need. doi:10.48550/ARXIV.2008.02217
+
+[[7]](https://arxiv.org/abs/1706.02515)
+Klambauer, G., Unterthiner, T., Mayr, A., & Hochreiter, S. (2017). Self-Normalizing Neural Networks. doi:10.48550/ARXIV.1706.02515
