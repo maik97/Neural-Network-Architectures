@@ -1,5 +1,4 @@
 import torch.nn as nn
-import numpy as np
 from utils.init_layer import nn_block
 from utils.util_func import maybe_kwargs, maybe_default_kwarg
 

@@ -1,6 +1,8 @@
 import torch.nn as nn
 import numpy as np
 from utils.init_layer import nn_block
+from utils.util_func import maybe_kwargs, maybe_default_kwarg, extract_kwarg
+
 
 class SelfNormalizingNetworkBlock(nn.Module):
 
@@ -8,29 +10,27 @@ class SelfNormalizingNetworkBlock(nn.Module):
             self,
             in_features,
             out_features,
-            dropout_p=0.0,
-            dropout_type='auto',
-            dropout_kwargs=None,
+            dense_kwargs=None,
             trace_activations=False,
-            layer_kwargs=None,
-            layer_nn=None,
-            activation='auto',
-            activation_kwargs=None,
     ):
         super(SelfNormalizingNetworkBlock, self).__init__()
 
         self.in_features = in_features
         self.out_features = out_features
 
-        activation = nn.SELU() if activation == 'auto' else activation
-        self.dense = nn_block(in_features, out_features, layer_nn, layer_kwargs, activation, activation_kwargs)
+        dense_kwargs = maybe_default_kwarg(dense_kwargs, 'layer_nn', nn.Linear)
+        dense_kwargs = maybe_default_kwarg(dense_kwargs, 'activation', nn.SELU)
 
-        dropout_type = nn.AlphaDropout if dropout_type == 'auto' else dropout_type
-        dropout_kwargs = {} if dropout_kwargs is None else dropout_kwargs
+        dropout_type = extract_kwarg(dense_kwargs, 'dropout_type', nn.AlphaDropout, None)
+        dropout_p = extract_kwarg(dense_kwargs, 'dropout_p', 0.0, 0.0)
+        dropout_kwargs = extract_kwarg(dense_kwargs, 'dropout_kwargs', None, None)
+
+        self.dense = nn_block(in_features, out_features, **dense_kwargs)
+
         if dropout_p == 0.0 or dropout_type is None:
             self.dropout = None
         else:
-            self.dropout = dropout_type(dropout_p, **dropout_kwargs)
+            self.dropout = dropout_type(dropout_p, **maybe_kwargs(dropout_kwargs))
 
         self.trace_activations = trace_activations
 
