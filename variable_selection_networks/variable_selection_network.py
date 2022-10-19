@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
-from torch.nn import functional as F
-from utils.util_func import maybe_default_kwarg
+from utils.util_func import maybe_kwargs
 from utils.network_block import NetworkBlock
 
 from gated_networks.gated_residual_network import GatedResidualNetwork
@@ -15,8 +14,8 @@ class VariableSelectionNetwork(nn.Module):
             out_features,
             hidden_features,
             num_variables,
-            softmax_dense_kwargs,
-            *args, **kwargs,
+            grn_kwargs=None,
+            softmax_block_kwargs=None,
     ):
         super(VariableSelectionNetwork, self).__init__()
 
@@ -33,20 +32,21 @@ class VariableSelectionNetwork(nn.Module):
             in_features=in_features * num_variables,
             out_features=out_features * num_variables,
             hidden_features=hidden_features * num_variables,
-            *args, **kwargs
+            **maybe_kwargs(grn_kwargs)
         )
 
-        softmax_dense_kwargs = maybe_default_kwarg(softmax_dense_kwargs, 'activation', nn.Softmax)
-        self.softmax_dense = NetworkBlock(
+        self.softmax_block = NetworkBlock(
             in_features=in_features * num_variables,
             out_features=out_features * num_variables,
-            **softmax_dense_kwargs
+            **maybe_kwargs(softmax_block_kwargs, defaults=dict(
+                activation=nn.Softmax
+            ))
         )
 
     def forward(self, inputs):
         v = torch.cat(inputs)
         v = self.grn_concat(v)
-        v = torch.unsqueeze(self.softmax(v), dim=-1)
+        v = torch.unsqueeze(self.softmax_block(v), dim=-1)
 
         x = []
         for idx, input in enumerate(inputs):

@@ -27,29 +27,27 @@ class GatedResidualNetwork(nn.Module):
         self.hidden_features = hidden_features
         self.out_features = out_features
 
-        elu_dense_kwargs = maybe_default_kwarg(elu_dense_kwargs, 'layer_nn', nn.Linear)
-        elu_dense_kwargs = maybe_default_kwarg(elu_dense_kwargs, 'activation', nn.ELU)
         self.elu_dense = NetworkBlock(
             in_features=in_features,
             out_features=hidden_features,
-            **elu_dense_kwargs
+            **maybe_kwargs(elu_dense_kwargs, defaults=dict(
+                activation=nn.ELU
+            ))
         )
 
-        linear_dense_kwargs = maybe_default_kwarg(linear_dense_kwargs, 'layer_nn', nn.Linear)
-        linear_dense_kwargs = maybe_default_kwarg(linear_dense_kwargs, 'activation', None)
-        linear_dense_kwargs = maybe_default_kwarg(linear_dense_kwargs, 'dropout_p', 0.15)
-        linear_dense_kwargs = maybe_default_kwarg(linear_dense_kwargs, 'dense_dropout_type', nn.Dropout)
         self.linear_dense = NetworkBlock(
             in_features=hidden_features,
             out_features=out_features,
-            **linear_dense_kwargs
+            **maybe_kwargs(linear_dense_kwargs, defaults=dict(
+                dropout_rate=0.15,
+            ))
         )
 
         self.gated_linear_unit = GatedLinearUnit(
             in_features=in_features,
             out_features=out_features,
             gate_kwargs=glu_gate_kwargs,
-            dense_kwargs=glu_dense_kwargs,
+            block_kwargs=glu_dense_kwargs,
         )
 
         if use_projector:
