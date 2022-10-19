@@ -1,6 +1,6 @@
 import torch.nn as nn
 from utils.network_block import NetworkBlock
-from utils.util_func import maybe_kwargs, maybe_default_kwarg
+from utils.util_func import maybe_kwargs
 
 from gated_networks.gated_linear_unit import GatedLinearUnit
 
@@ -37,14 +37,14 @@ class GatedResidualNetwork(nn.Module):
 
         self.linear_dense = NetworkBlock(
             in_features=hidden_features,
-            out_features=out_features,
+            out_features=hidden_features,
             **maybe_kwargs(linear_dense_kwargs, defaults=dict(
                 dropout_rate=0.15,
             ))
         )
 
         self.gated_linear_unit = GatedLinearUnit(
-            in_features=in_features,
+            in_features=hidden_features,
             out_features=out_features,
             gate_kwargs=glu_gate_kwargs,
             block_kwargs=glu_dense_kwargs,
@@ -57,7 +57,7 @@ class GatedResidualNetwork(nn.Module):
                 **maybe_kwargs(projector_kwargs)
             )
         else:
-            if in_features != out_features:
+            if in_features != hidden_features:
                 raise Exception(f"in_features must be the same as out_features, when not using a projector layer"
                                 f"in_features: {in_features}, out_features: {out_features}")
             self.projector = None
@@ -81,3 +81,28 @@ class GatedResidualNetwork(nn.Module):
             x = self.layer_norm(x)
 
         return x
+
+
+def main():
+    import torch
+    import numpy as np
+
+    batch_size = 5
+    feature_size = 4
+    out_features = 3
+    hidden_features = 10
+
+    test_tensor = torch.tensor(np.random.random((batch_size, feature_size)), dtype=torch.float)
+
+    test_grn = GatedResidualNetwork(
+        in_features=feature_size,
+        out_features=out_features,
+        hidden_features=hidden_features
+    )
+
+    print(test_tensor.shape)
+    print(test_grn(test_tensor).shape)
+
+
+if __name__ == '__main__':
+    main()
