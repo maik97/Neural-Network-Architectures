@@ -28,7 +28,7 @@ See below for a list of the implementations so far.
 - [X] Self-Normalizing Neural Network [^7]
   [[Code]](https://github.com/maik97/Neural-Network-Architectures/tree/main/self_normalizing_neural_networks)
 
-## References
+# References
 [^1]: Veličković, P., Cucurull, G., Casanova, A., Romero, A., Liò, P., & Bengio, Y. (2017). Graph Attention Networks. doi:10.48550/ARXIV.1710.10903
 [[arxiv]](https://arxiv.org/abs/1710.10903)
 
