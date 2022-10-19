@@ -6,7 +6,7 @@ See below for a list of the implementations so far.
 
 ## Graph Neural Networks
 - [x] Graph Attention Networks (GAT)
-  [[1]](https://arxiv.org/abs/1710.10903)
+  [[1]](<a href="https://arxiv.org/abs/1710.10903" target="_blank">external link</a>)
   - [x] GAT with Paired Nodes Attention
     [[Code]](https://github.com/maik97/Neural-Network-Architectures/blob/main/gat/paired_nodes_attention.py)
   - [x] GAT with Masked Self-Attention
