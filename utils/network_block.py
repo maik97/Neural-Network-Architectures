@@ -1,11 +1,11 @@
 import torch.nn as nn
 import numpy as np
-from utils.util_func import maybe_kwargs, maybe_default_kwarg, extract_kwarg
+from utils.util_func import maybe_kwargs
 
 
 class SelfNormLinear(nn.Module):
 
-    def __init__(self,in_features, out_features, linear_kwargs=None):
+    def __init__(self, in_features, out_features, linear_kwargs=None):
         super(SelfNormLinear, self).__init__()
         self.linear = nn.Linear(in_features, out_features, **maybe_kwargs(linear_kwargs))
 
